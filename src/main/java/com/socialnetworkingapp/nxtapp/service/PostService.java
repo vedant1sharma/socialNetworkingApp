@@ -13,14 +13,31 @@ public class PostService {
     @Autowired
     private PostRepository postRepository;
 
+    @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
+    private UserService userService;
+
     public Post createPost(final Post post) {
         return postRepository.save(post);
     }
 
     public Post addComment(final String postId, final Comment comment) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("Post not found"));
+
+        // Check if the commenter is blocked by post owner
+        if(userService.isUserBlocked(post.getUserId(), comment.getUserId())) {
+            throw new RuntimeException("You are blocked from commenting on this post!");
+        }
+
         post.getComments().add(comment);
-        return postRepository.save(post);
+        postRepository.save(post);
+
+        // To trigger notification to post owner
+        notificationService.createNotification(comment.getUserId(), post.getUserId(), "Someone added a comment to your post.");
+        
+        return post;
     }
 
     public void likePost(final String postId) {
