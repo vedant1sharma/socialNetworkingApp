@@ -23,5 +23,25 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User blockUser(final String userId, final String blockedUserId) {
+        User user = userRepository.findById(userId).orElseThrow(
+            () -> new RuntimeException("Couldn't find user"));
+        user.getBlockedUsers().add(blockedUserId);
+        return userRepository.save(user);
+    }
+
+    public User unblockUser(final String userId, final String blockedUserId) {
+        User user = userRepository.findById(userId).orElseThrow(
+            () -> new RuntimeException("Couldn't find user"));
+        user.getBlockedUsers().remove(blockedUserId);
+        return userRepository.save(user);
+    }
+
+    public boolean isUserBlocked(final String userId, final String blockedUserId) {
+        User user = userRepository.findById(userId).orElseThrow(
+            () -> new RuntimeException("Couldn't find user"));
+        return user.getBlockedUsers().contains(blockedUserId);
+    }
+
     
 }

@@ -25,7 +25,7 @@ public class NotificationService {
         return notificationRepository.save(notification);
     }
 
-    public List<Notification> geUserNotifications(final String recipientId) {
+    public List<Notification> getUserNotifications(final String recipientId) {
         return notificationRepository.findByRecipientId(recipientId);
     }
 
